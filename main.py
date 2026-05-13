@@ -11,7 +11,7 @@ app = FastAPI()
 import os
 
 genai.configure(
-    api_key="AIzaSyCoVrEe62FmPEaH4UO18Ft9eEKHfAC3Ok0"
+    api_key="AIzaSyD4S6cshfUtLKt7Cz5as3BV9v8IMhwKsyk"
 )
 
 model = genai.GenerativeModel("gemini-1.5-flash")
