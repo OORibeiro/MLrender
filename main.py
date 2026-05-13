@@ -6,6 +6,10 @@ import skfuzzy as fuzzy
 
 app = FastAPI()
 
+@app.get("/")
+def home():
+    return {"mensagem": "API ML funcionando"}
+
 @app.get("/gerar-grupos")
 def gerar_grupos():
 
