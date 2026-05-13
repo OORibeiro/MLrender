@@ -14,7 +14,7 @@ genai.configure(
     api_key="AIzaSyD4S6cshfUtLKt7Cz5as3BV9v8IMhwKsyk"
 )
 
-model = genai.GenerativeModel('gemini-2.0-flash')
+model = genai.GenerativeModel('gemini-1.5-flash-8b')
 
 # =========================================
 # FUNÇÃO INTERNA DO ML
