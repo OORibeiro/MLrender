@@ -11,7 +11,7 @@ app = FastAPI()
 import os
 
 genai.configure(
-    api_key=os.getenv("AIzaSyCoVrEe62FmPEaH4UO18Ft9eEKHfAC3Ok0")
+    api_key="AIzaSyCoVrEe62FmPEaH4UO18Ft9eEKHfAC3Ok0"
 )
 
 model = genai.GenerativeModel("gemini-1.5-flash")
@@ -196,11 +196,11 @@ def gerar_atividades():
 
     resposta = model.generate_content(prompt)
 
-texto = resposta.text
+    texto = resposta.text
 
-texto = texto.replace("```json", "")
-texto = texto.replace("```", "")
-texto = texto.strip()
+    texto = texto.replace("```json", "")
+    texto = texto.replace("```", "")
+    texto = texto.strip()
 
-return json.loads(texto)
+    return json.loads(texto)
 
