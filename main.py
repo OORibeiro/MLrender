@@ -3,12 +3,18 @@ import requests
 import pandas as pd
 import numpy as np
 import skfuzzy as fuzzy
-from openai import OpenAI
+import google.generativeai as genai
 import json
 
 app = FastAPI()
 
-client = OpenAI()
+import os
+
+genai.configure(
+    api_key=os.getenv("AIzaSyCoVrEe62FmPEaH4UO18Ft9eEKHfAC3Ok0")
+)
+
+model = genai.GenerativeModel("gemini-1.5-flash")
 
 # =========================================
 # FUNÇÃO INTERNA DO ML
@@ -188,20 +194,15 @@ def gerar_atividades():
     {json.dumps(grupos, ensure_ascii=False)}
     """
 
-    resposta = client.chat.completions.create(
-        model="gpt-4.1-mini",
-        messages=[
-            {
-                "role": "system",
-                "content": "Você é um especialista escoteiro."
-            },
-            {
-                "role": "user",
-                "content": prompt
-            }
-        ],
-        temperature=0.7
-    )
+    resposta = model.generate_content(prompt)
+
+texto = resposta.text
+
+texto = texto.replace("```json", "")
+texto = texto.replace("```", "")
+texto = texto.strip()
+
+return json.loads(texto)
 
     texto = resposta.choices[0].message.content
 
