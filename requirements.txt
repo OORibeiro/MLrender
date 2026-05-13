@@ -5,4 +5,5 @@ numpy
 requests
 scikit-fuzzy
 scipy
+packaging
 openai
