@@ -3,15 +3,18 @@ import requests
 import pandas as pd
 import numpy as np
 import skfuzzy as fuzzy
+from openai import OpenAI
+import json
 
 app = FastAPI()
 
-@app.get("/")
-def home():
-    return {"mensagem": "API ML funcionando"}
+client = OpenAI()
 
-@app.get("/gerar-grupos")
-def gerar_grupos():
+# =========================================
+# FUNÇÃO INTERNA DO ML
+# =========================================
+
+def processar_grupos():
 
     skills = ['fisico', 'tecnico', 'experiencia']
 
@@ -23,7 +26,10 @@ def gerar_grupos():
         "password": "123"
     }
 
-    login_response = requests.post(login_url, json=dados_login)
+    login_response = requests.post(
+        login_url,
+        json=dados_login
+    )
 
     token = login_response.json()['token']
 
@@ -35,7 +41,10 @@ def gerar_grupos():
     # BUSCAR MEMBROS
     members_url = "https://grupo-escoteiro.onrender.com/members"
 
-    response = requests.get(members_url, headers=headers)
+    response = requests.get(
+        members_url,
+        headers=headers
+    )
 
     dados = response.json()
 
@@ -146,3 +155,54 @@ def gerar_grupos():
         "fpc": float(fpc),
         "grupos": resultado
     }
+
+# =========================================
+# ENDPOINT DOS GRUPOS
+# =========================================
+
+@app.get("/gerar-grupos")
+def gerar_grupos():
+
+    return processar_grupos()
+
+# =========================================
+# ENDPOINT DAS ATIVIDADES
+# =========================================
+
+@app.get("/atividades")
+def gerar_atividades():
+
+    grupos = processar_grupos()
+
+    prompt = f"""
+    Você é um especialista em atividades escoteiras.
+
+    Analise os grupos abaixo e sugira:
+    - 2 atividades ideais
+    - dificuldade
+    - objetivo
+
+    Responda SOMENTE em JSON.
+
+    Dados:
+    {json.dumps(grupos, ensure_ascii=False)}
+    """
+
+    resposta = client.chat.completions.create(
+        model="gpt-4.1-mini",
+        messages=[
+            {
+                "role": "system",
+                "content": "Você é um especialista escoteiro."
+            },
+            {
+                "role": "user",
+                "content": prompt
+            }
+        ],
+        temperature=0.7
+    )
+
+    texto = resposta.choices[0].message.content
+
+    return json.loads(texto)
