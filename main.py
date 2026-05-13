@@ -13,7 +13,7 @@ app = FastAPI()
 # =========================================
 
 client = OpenAI(
-    api_key="COLOQUE_SUA_KEY_AQUI",
+    api_key="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",
     base_url="https://openrouter.ai/api/v1"
 )
 
