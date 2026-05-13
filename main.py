@@ -5,6 +5,7 @@ import numpy as np
 import skfuzzy as fuzzy
 from openai import OpenAI
 import json
+import os
 
 app = FastAPI()
 
@@ -12,8 +13,10 @@ app = FastAPI()
 # OPENROUTER
 # =========================================
 
+
+
 client = OpenAI(
-    api_key="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",
+    api_key=os.getenv("OPENROUTER_API_KEY"),
     base_url="https://openrouter.ai/api/v1"
 )
 
