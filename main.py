@@ -3,18 +3,19 @@ import requests
 import pandas as pd
 import numpy as np
 import skfuzzy as fuzzy
-import google.generativeai as genai
+from openai import OpenAI
 import json
 
 app = FastAPI()
 
-import os
+# =========================================
+# OPENROUTER
+# =========================================
 
-genai.configure(
-    api_key="AIzaSyD4S6cshfUtLKt7Cz5as3BV9v8IMhwKsyk"
+client = OpenAI(
+    api_key="COLOQUE_SUA_KEY_AQUI",
+    base_url="https://openrouter.ai/api/v1"
 )
-
-model = genai.GenerativeModel('gemini-latest')
 
 # =========================================
 # FUNÇÃO INTERNA DO ML
@@ -188,19 +189,33 @@ def gerar_atividades():
     - dificuldade
     - objetivo
 
-    Responda SOMENTE em JSON.
+    Responda SOMENTE em JSON válido.
 
     Dados:
     {json.dumps(grupos, ensure_ascii=False)}
     """
 
-    resposta = model.generate_content(prompt)
+    resposta = client.chat.completions.create(
+        model="openai/gpt-4o-mini",
+        messages=[
+            {
+                "role": "user",
+                "content": prompt
+            }
+        ]
+    )
 
-    texto = resposta.text
+    texto = resposta.choices[0].message.content
 
     texto = texto.replace("```json", "")
     texto = texto.replace("```", "")
     texto = texto.strip()
 
-    return json.loads(texto)
+    try:
+        return json.loads(texto)
 
+    except:
+        return {
+            "erro": "JSON inválido",
+            "resposta": texto
+        }
