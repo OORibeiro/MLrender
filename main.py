@@ -182,30 +182,54 @@ def gerar_atividades():
     grupos = processar_grupos()
 
     prompt = f"""
-    Você é um especialista em atividades escoteiras.
+    Analise os grupos escoteiros abaixo.
 
-    Analise os grupos abaixo e sugira:
-    - 2 atividades ideais
+    Para cada grupo responda:
+    - grupo
+    - perfil_do_grupo
+    - 2 atividades recomendadas
     - dificuldade
     - objetivo
 
-    Responda SOMENTE em JSON válido.
+    IMPORTANTE:
+    Responda SOMENTE JSON VÁLIDO.
+    NÃO use markdown.
+    NÃO use ```json.
+
+    Estrutura esperada:
+
+    {{
+      "grupos": [
+        {{
+          "grupo": 0,
+          "perfil_do_grupo": "...",
+          "atividades": [
+            {{
+              "nome": "...",
+              "dificuldade": "...",
+              "objetivo": "..."
+            }}
+          ]
+        }}
+      ]
+    }}
 
     Dados:
     {json.dumps(grupos, ensure_ascii=False)}
     """
 
     resposta = client.chat.completions.create(
-        model="openai/gpt-4o-mini",
+        model="google/gemma-3-27b-it:free",
         messages=[
             {
                 "role": "user",
                 "content": prompt
             }
-        ]
+        ],
+        temperature=0.7
     )
 
-    texto = resposta.choices[0].message.content
+    texto = resposta.choices[0].message.content.strip()
 
     texto = texto.replace("```json", "")
     texto = texto.replace("```", "")
@@ -214,8 +238,9 @@ def gerar_atividades():
     try:
         return json.loads(texto)
 
-    except:
+    except Exception as e:
         return {
             "erro": "JSON inválido",
-            "resposta": texto
+            "detalhe": str(e),
+            "resposta_recebida": texto
         }
