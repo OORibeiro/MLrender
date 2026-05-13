@@ -5,6 +5,4 @@ numpy
 requests
 scikit-fuzzy
 scipy
-packaging
-google-generativeai
-google-generativeai>=0.8.0
+openai
