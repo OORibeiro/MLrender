@@ -204,6 +204,3 @@ texto = texto.strip()
 
 return json.loads(texto)
 
-    texto = resposta.choices[0].message.content
-
-    return json.loads(texto)
